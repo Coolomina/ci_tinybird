@@ -26,6 +26,13 @@ jobs:
         with:
           fetch-depth: 300
           ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/cache@v3
+        id: cache-pip
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-          
       - uses: actions/setup-python@v3
         with:
           python-version: "3.8"
@@ -43,7 +50,9 @@ jobs:
           source .tinyenv
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
           echo "_ENV_FLAGS=$_ENV_FLAGS" >> $GITHUB_ENV
+
       - name: Install Tinybird CLI
+        if: steps.cache-pip.outputs.cache-hit != 'true'
         run: pip install tinybird-cli
 
       - name: Tinybird version
@@ -121,6 +130,7 @@ jobs:
           [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to the tokens section in your Workspace, copy the 'admin token (user@domain.com)' associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
 
       - name: Install Tinybird CLI
+        if: steps.cache-pip.outputs.cache-hit != 'true'
         run: pip install tinybird-cli
 
       - name: Tinybird version
