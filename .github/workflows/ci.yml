@@ -31,6 +31,7 @@ jobs:
         run: echo "tinybird-cli==1.0.0b402" > requirements.txt
 
       - uses: actions/setup-python@v3
+        id: python-cache
         with:
           python-version: "3.8"
           architecture: "x64"
@@ -50,7 +51,12 @@ jobs:
           echo "_ENV_FLAGS=$_ENV_FLAGS" >> $GITHUB_ENV
 
       - name: Install Tinybird CLI
-        run: pip install -r requirements.txt
+        if: ${{ steps.python-cache.outputs.cache-hit }} == 'true'
+        run: pip install --no-deps -r requirements.txt
+
+      - name: Install Tinybird CLI
+        if: ${{ steps.python-cache.outputs.cache-hit }} == 'false'
+        run: pip install --no-deps -r requirements.txt
 
       - name: Tinybird version
         run: tb --version       
@@ -120,14 +126,12 @@ jobs:
       - name: Create requirements.txt
         run: echo "tinybird-cli==1.0.0b402" > requirements.txt
       - uses: actions/setup-python@v3
+        id: python-cache
         with:
           python-version: "3.8"
           architecture: "x64"
           cache: "pip"
       
-      - name: Testaso
-        run: pip list
-
       - name: Validate input
         run: |
           [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to the tokens section in your Workspace, copy the 'admin token (user@domain.com)' associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
@@ -141,7 +145,12 @@ jobs:
             ${{ runner.os }}-pip
 
       - name: Install Tinybird CLI
-        run: pip install -r requirements.txt
+        if: ${{ steps.python-cache.outputs.cache-hit }} == 'true'
+        run: pip install --no-deps -r requirements.txt
+
+      - name: Install Tinybird CLI
+        if: ${{ steps.python-cache.outputs.cache-hit }} == 'false'
+        run: pip install --no-deps -r requirements.txt
 
       - name: Tinybird version
         run: tb --version       
