@@ -53,8 +53,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip
 
+      - name: Deps
+        run: ls -la ~/.cache/pip
+
       - name: Install Tinybird CLI
-        # if: steps.cache-pip.outputs.cache-hit != 'true'
+        if: steps.cache-pip.outputs.cache-hit != 'true'
         run: pip install tinybird-cli
 
       - name: Tinybird version
@@ -141,7 +144,7 @@ jobs:
 
 
       - name: Install Tinybird CLI
-        # if: steps.cache-pip.outputs.cache-hit != 'true'
+        if: steps.cache-pip.outputs.cache-hit != 'true'
         run: pip install tinybird-cli
 
       - name: Tinybird version
