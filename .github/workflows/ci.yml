@@ -27,10 +27,14 @@ jobs:
           fetch-depth: 300
           ref: ${{ github.event.pull_request.head.sha }}
       
+      - name: Create requirements.txt
+        run: echo "tinybird-cli==1.0.0b402" > requirements.txt
+
       - uses: actions/setup-python@v3
         with:
           python-version: "3.8"
           architecture: "x64"
+          cache: "pip"
 
       - name: Validate input
         run: |
@@ -45,20 +49,8 @@ jobs:
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
           echo "_ENV_FLAGS=$_ENV_FLAGS" >> $GITHUB_ENV
 
-      - uses: actions/cache@v3
-        id: cache-pip
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip
-          restore-keys: |
-            ${{ runner.os }}-pip
-
-      - name: Depsssss
-        run: pip cache dir
-
       - name: Install Tinybird CLI
-        if: steps.cache-pip.outputs.cache-hit != 'true'
-        run: pip install tinybird-cli
+        run: pip install -r requirements.txt
 
       - name: Tinybird version
         run: tb --version       
@@ -125,10 +117,15 @@ jobs:
     needs: [ci_branching]
     steps:
       - uses: actions/checkout@master
+      - name: Create requirements.txt
+        run: echo "tinybird-cli==1.0.0b402" > requirements.txt
       - uses: actions/setup-python@v3
         with:
           python-version: "3.8"
           architecture: "x64"
+          cache: "pip"
+      - name: Testaso
+        run: pip list
 
       - name: Validate input
         run: |
@@ -142,10 +139,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip
 
-
       - name: Install Tinybird CLI
-        if: steps.cache-pip.outputs.cache-hit != 'true'
-        run: pip install tinybird-cli
+        run: pip install -r requirements.txt
 
       - name: Tinybird version
         run: tb --version       
