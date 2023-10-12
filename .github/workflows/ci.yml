@@ -29,7 +29,7 @@ jobs:
       - uses: actions/cache@v3
         id: cache-pip
         with:
-          path: ${{ env.pythonLocation }}
+          path: ~/.cache/pip
           key: ${{ runner.os }}-pip
           restore-keys: |
             ${{ runner.os }}-pip
